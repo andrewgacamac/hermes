@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hermès Monitor - Search Log</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #f6a623;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+        
+        .stat {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f6a623;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .log-entries {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .log-entry {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            transition: background-color 0.2s;
+        }
+        
+        .log-entry:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .timestamp {
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .failure {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        .products-found {
+            color: #2196f3;
+        }
+        
+        .new-items {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .alerts-sent {
+            color: #9c27b0;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #64b5f6;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .filter-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .filter-bar input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .filter-bar button {
+            padding: 8px 16px;
+            background: #f6a623;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .filter-bar button:hover {
+            background: #e59613;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span>🛍️</span>
+            Hermès Monitor - Search Log
+        </h1>
+        <p class="subtitle">Real-time monitoring log for Hermès product searches</p>
+        
+        <div class="info-box">
+            ℹ️ This is a standalone view. To see live updates, run <code>npm run server</code> and visit <code>http://localhost:3000</code>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="totalSearches">0</div>
+                <div class="stat-label">Total Searches</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="successRate">0%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="alertsSent">0</div>
+                <div class="stat-label">Alerts Sent</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="lastCheck">Never</div>
+                <div class="stat-label">Last Check</div>
+            </div>
+        </div>
+        
+        <div class="filter-bar">
+            <input type="text" id="searchFilter" placeholder="Filter logs..." />
+            <button onclick="loadFromFile()">Load Log File</button>
+            <button onclick="exportLogs()">Export CSV</button>
+        </div>
+        
+        <div class="log-entries" id="logEntries">
+            <div class="no-logs">Click "Load Log File" to view the search logs</div>
+        </div>
+    </div>
+    
+    <script>
+        // Embedded log data - paste the JSON here
+        let logs = [];
+        
+        // Update stats and display
+        function updateDisplay() {
+            const logContainer = document.getElementById('logEntries');
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+            
+            // Filter logs if search is active
+            const displayLogs = searchFilter 
+                ? logs.filter(log => log.message.toLowerCase().includes(searchFilter))
+                : logs;
+            
+            // Update stats
+            const totalSearches = logs.length;
+            const successfulSearches = logs.filter(log => log.success).length;
+            const successRate = totalSearches > 0 ? Math.round((successfulSearches / totalSearches) * 100) : 0;
+            const totalAlerts = logs.reduce((sum, log) => sum + (log.alertsSent || 0), 0);
+            
+            document.getElementById('totalSearches').textContent = totalSearches;
+            document.getElementById('successRate').textContent = successRate + '%';
+            document.getElementById('alertsSent').textContent = totalAlerts;
+            
+            if (logs.length > 0) {
+                const lastCheck = new Date(logs[0].timestamp);
+                const timeAgo = getTimeAgo(lastCheck);
+                const estTime = logs[0].timestampEST || lastCheck.toLocaleString('en-US', {
+                    timeZone: 'America/New_York',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                document.getElementById('lastCheck').textContent = `${timeAgo} (${estTime} EST)`;
+            }
+            
+            // Display logs
+            if (displayLogs.length === 0) {
+                logContainer.innerHTML = '<div class="no-logs">No logs to display</div>';
+            } else {
+                logContainer.innerHTML = displayLogs.map(log => {
+                    // Use EST timestamp if available, otherwise convert
+                    const timestamp = log.timestampEST || new Date(log.timestamp).toLocaleString('en-US', {
+                        timeZone: 'America/New_York',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    });
+                    const statusClass = log.success ? 'success' : 'failure';
+                    const statusText = log.success ? 'SUCCESS' : 'FAILED';
+                    
+                    return `
+                        <div class="log-entry">
+                            <span class="timestamp">[${timestamp}]</span>
+                            <span class="${statusClass}">${statusText}</span>
+                            ${log.message}
+                            ${log.productsFound !== undefined ? `<span class="products-found">(${log.productsFound} products)</span>` : ''}
+                            ${log.newItems ? `<span class="new-items">NEW: ${log.newItems}</span>` : ''}
+                            ${log.alertsSent ? `<span class="alerts-sent">📱 ${log.alertsSent} alerts</span>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+        
+        // Load from file
+        function loadFromFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const text = await file.text();
+                    try {
+                        logs = JSON.parse(text);
+                        updateDisplay();
+                        alert(`Loaded ${logs.length} log entries`);
+                    } catch (error) {
+                        alert('Invalid JSON file');
+                    }
+                }
+            };
+            input.click();
+        }
+        
+        // Export logs as CSV
+        function exportLogs() {
+            if (logs.length === 0) {
+                alert('No logs to export');
+                return;
+            }
+            
+            const csv = [
+                ['Timestamp', 'Status', 'Message', 'Products Found', 'New Items', 'Alerts Sent'],
+                ...logs.map(log => [
+                    new Date(log.timestamp).toLocaleString(),
+                    log.success ? 'SUCCESS' : 'FAILED',
+                    log.message,
+                    log.productsFound || '',
+                    log.newItems || '',
+                    log.alertsSent || ''
+                ])
+            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hermes-monitor-logs-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+        
+        // Get time ago string
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return seconds + 's ago';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return minutes + 'm ago';
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return hours + 'h ago';
+            const days = Math.floor(hours / 24);
+            return days + 'd ago';
+        }
+        
+        // Filter logs
+        document.getElementById('searchFilter').addEventListener('input', updateDisplay);
+        
+        // Try to load embedded data
+        const embeddedLogs = [
+  {
+    "timestamp": "2025-07-26T19:22:00.865Z",
+    "success": true,
+    "message": "Monitored Hermès bags page - No changes detected",
+    "productsFound": 48,
+    "newItems": 0,
+    "priceChanges": 0,
+    "availabilityChanges": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:22:00.865Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48
+  },
+  {
+    "timestamp": "2025-07-26T19:22:00.779Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48
+  },
+  {
+    "timestamp": "2025-07-26T19:19:37.084Z",
+    "success": true,
+    "message": "Monitored Hermès bags page - No changes detected",
+    "productsFound": 48,
+    "newItems": 0,
+    "priceChanges": 0,
+    "availabilityChanges": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:19:37.083Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48
+  },
+  {
+    "timestamp": "2025-07-26T19:19:36.927Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48
+  },
+  {
+    "timestamp": "2025-07-26T19:14:47.167Z",
+    "success": true,
+    "message": "Monitored Hermès bags page - Found 2 new products, 1 price changes",
+    "productsFound": 48,
+    "newItems": 2,
+    "priceChanges": 1,
+    "availabilityChanges": 0,
+    "alertsSent": 3
+  },
+  {
+    "timestamp": "2025-07-26T19:14:46.166Z",
+    "success": false,
+    "message": "Failed to scrape Hermès page: Connection timeout",
+    "error": "Connection timeout"
+  },
+  {
+    "timestamp": "2025-07-26T19:14:45.166Z",
+    "success": true,
+    "message": "Scraped Hermès bags page - no changes detected",
+    "productsFound": 48,
+    "newItems": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:14:44.165Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48,
+    "newItems": 2,
+    "alertsSent": 2
+  }
+];
+        
+        if (embeddedLogs && embeddedLogs.length > 0) {
+            logs = embeddedLogs;
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>

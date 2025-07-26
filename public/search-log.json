@@ -1,0 +1,125 @@
+[
+  {
+    "timestamp": "2025-07-26T19:56:55.498Z",
+    "timestampEST": "07/26/2025, 15:56:55",
+    "success": true,
+    "message": "No Picotin bags found - empty search",
+    "productsFound": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:56:55.301Z",
+    "timestampEST": "07/26/2025, 15:56:55",
+    "success": true,
+    "message": "Monitor started - Searching for Picotin every 5 min",
+    "productsFound": 0,
+    "alertsSent": 1
+  },
+  {
+    "timestamp": "2025-07-26T19:42:59.305Z",
+    "timestampEST": "07/26/2025, 15:42:59",
+    "success": true,
+    "message": "Daily 9 AM notification - Searching for Picotin today",
+    "productsFound": 0,
+    "alertsSent": 1
+  },
+  {
+    "timestamp": "2025-07-26T19:42:59.127Z",
+    "timestampEST": "07/26/2025, 15:42:59",
+    "success": true,
+    "message": "Monitor started - Searching for Picotin every 5 min",
+    "productsFound": 0,
+    "alertsSent": 1
+  },
+  {
+    "timestamp": "2025-07-26T19:39:26.967Z",
+    "timestampEST": "07/26/2025, 15:39:26",
+    "success": true,
+    "message": "No Picotin bags found - empty search",
+    "productsFound": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:35:56.064Z",
+    "success": true,
+    "message": "No Picotin bags found - empty search",
+    "productsFound": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:22:00.865Z",
+    "success": true,
+    "message": "Monitored Hermès bags page - No changes detected",
+    "productsFound": 48,
+    "newItems": 0,
+    "priceChanges": 0,
+    "availabilityChanges": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:22:00.865Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48
+  },
+  {
+    "timestamp": "2025-07-26T19:22:00.779Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48
+  },
+  {
+    "timestamp": "2025-07-26T19:19:37.084Z",
+    "success": true,
+    "message": "Monitored Hermès bags page - No changes detected",
+    "productsFound": 48,
+    "newItems": 0,
+    "priceChanges": 0,
+    "availabilityChanges": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:19:37.083Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48
+  },
+  {
+    "timestamp": "2025-07-26T19:19:36.927Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48
+  },
+  {
+    "timestamp": "2025-07-26T19:14:47.167Z",
+    "success": true,
+    "message": "Monitored Hermès bags page - Found 2 new products, 1 price changes",
+    "productsFound": 48,
+    "newItems": 2,
+    "priceChanges": 1,
+    "availabilityChanges": 0,
+    "alertsSent": 3
+  },
+  {
+    "timestamp": "2025-07-26T19:14:46.164Z",
+    "success": false,
+    "message": "Failed to scrape Hermès page: Connection timeout",
+    "error": "Connection timeout"
+  },
+  {
+    "timestamp": "2025-07-26T19:14:45.162Z",
+    "success": true,
+    "message": "Scraped Hermès bags page - no changes detected",
+    "productsFound": 48,
+    "newItems": 0,
+    "alertsSent": 0
+  },
+  {
+    "timestamp": "2025-07-26T19:14:44.159Z",
+    "success": true,
+    "message": "Scraped Hermès bags page successfully",
+    "productsFound": 48,
+    "newItems": 2,
+    "alertsSent": 2
+  }
+]

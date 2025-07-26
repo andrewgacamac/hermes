@@ -1,0 +1,30 @@
+[Unit]
+Description=Hermes Picotin Monitor
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USERNAME
+WorkingDirectory=/home/YOUR_USERNAME/hermez
+ExecStart=/usr/bin/node /home/YOUR_USERNAME/hermez/start-picotin-monitor.js
+Restart=always
+RestartSec=10
+
+# Environment variables
+Environment="NODE_ENV=production"
+Environment="TWILIO_ACCOUNT_SID=YOUR_SID"
+Environment="TWILIO_AUTH_TOKEN=YOUR_TOKEN"
+Environment="TWILIO_PHONE_NUMBER=YOUR_PHONE"
+Environment="TEST_RECIPIENT_NUMBER=YOUR_NUMBER"
+Environment="MONITOR_INTERVAL_MINUTES=5"
+Environment="MONITOR_BUSINESS_HOURS_ONLY=true"
+Environment="MONITOR_START_HOUR=9"
+Environment="MONITOR_END_HOUR=18"
+Environment="MONITOR_WEEKDAYS_ONLY=true"
+
+# Logging
+StandardOutput=append:/var/log/picotin-monitor.log
+StandardError=append:/var/log/picotin-monitor-error.log
+
+[Install]
+WantedBy=multi-user.target

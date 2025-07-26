@@ -1,0 +1,50 @@
+{
+  "monitoring": {
+    "enabled": true,
+    "intervalMinutes": 5,
+    "maxRetries": 3,
+    "retryDelaySeconds": 60
+  },
+  "alerts": {
+    "newProducts": true,
+    "priceChanges": true,
+    "availabilityChanges": true,
+    "priceDropThreshold": 0.05,
+    "priceIncreaseThreshold": 0.1
+  },
+  "filters": {
+    "targetProducts": [
+      "Picotin"
+    ],
+    "excludeProducts": [
+      "strap",
+      "charm",
+      "keychain"
+    ],
+    "priceRange": {
+      "min": 1000,
+      "max": 50000
+    },
+    "colors": [
+      "Black",
+      "Brown",
+      "Beige/Natural",
+      "Grey"
+    ]
+  },
+  "notifications": {
+    "smsEnabled": true,
+    "recipientNumber": "",
+    "messageFormat": {
+      "newProduct": "🆕 NEW: {name} - {price} - {colors}. {link}",
+      "priceChange": "💰 PRICE CHANGE: {name} - {direction} from {oldPrice} to {newPrice}. {link}",
+      "availability": "📦 AVAILABILITY: {name} - Now {status}. {link}"
+    }
+  },
+  "scraping": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "timeout": 15000,
+    "respectRobots": true,
+    "delayBetweenRequests": 1000
+  }
+}
